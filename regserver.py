@@ -1,6 +1,8 @@
 import sys
 import socket
 import pickle
+import threading
+from time import sleep
 import reg_db
 import cli_input
 
@@ -42,10 +44,44 @@ def get_dets(args):
     return (1, response[1])
 
 
+class ServerThread(threading.Thread):
+
+    def __init__(self, delay, conn):
+        threading.Thread.__init__(self)
+        self.delay = delay
+        self.conn = conn
+
+    def run(self):
+        try:
+            with self.conn:
+                # Receive a request from the client
+                request_bytes = self.conn.recv(99999999)
+                request = pickle.loads(request_bytes)
+
+                sleep(self.delay)
+                # Process the request
+                if request['type'] == 'courses':
+                    print('Received command: get_overviews')
+                    response = get_courses(request['info'])
+                else:
+                    print('Received command: get_detail')
+                    response = get_dets(request['info'])
+                    # if len(response) == 0:
+                    #     err = sys.argv[0] + ': classid does not exist'
+                    #     print(err, file=sys.stderr) #test this****
+
+            # Send a response to the client
+                response_bytes = pickle.dumps(response)
+                self.conn.sendall(response_bytes)
+            print('Closed socket.socket')
+        except Exception as ex:
+            print(ex, file=sys.stderr)
+            sys.exit(1)
+
 # Recieve call from reg.py
 def main():
     user_input = cli_input.Input()
-    user_input.parse_cli_server(sys.argv[1:])
+    user_input = user_input.parse_cli_server(sys.argv[1:])
 
     try:
         with socket.socket() as server_sock:
@@ -62,36 +98,10 @@ def main():
                 conn, _ = server_sock.accept()
                 # try:
                 print("Accepted connection, opened socket.socket")
-                with conn:
-                # Receive a request from the client
-                    request_bytes = conn.recv(99999999)
-                    request = pickle.loads(request_bytes)
-
-                # Process the request
-                    if request['type'] == 'courses':
-                        print('Received command: get_overviews')
-                        response = get_courses(request['info'])
-                        #db = reg_db.Database()
-                        #response = db.query_cli(request['info'])
-                    else:
-                        print('Received command: get_detail')
-                        # response = get_dets(request[12345])
-                        # print(1)
-                        response = get_dets(request['info'])
-                        #db = reg_db.Database()
-                        #response = db.query_classid(request['info'])
-                        #if len(response) == 0:
-                            #err = argv[0] + ': classid does not exist'
-                            #print(err, file=sys.stderr) #test this****
-
-                # Send a response to the client
-                    response_bytes = pickle.dumps(response)
-                    conn.sendall(response_bytes)
-                print('Closed socket.socket')
-                # finally:
-                # # Close the connection
-                #     conn.close()
-
+                # Create a new thread to handle the connection
+                thread = ServerThread(user_input.delay, conn)
+                thread.start()
+               
     except Exception as ex:
         print(ex, file=sys.stderr)
         sys.exit(1)

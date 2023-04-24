@@ -105,7 +105,7 @@ class SearchApp(QtWidgets.QMainWindow):
 
 
 
-        layout.addWidget(self.search_button, 0, 2, 4, 1)
+        # layout.addWidget(self.search_button, 0, 2, 4, 1)
 
 
         layout2 = QtWidgets.QGridLayout()
@@ -129,7 +129,11 @@ class SearchApp(QtWidgets.QMainWindow):
         shortcut.activated.connect(self.clicked_selected_button)
 
         # Connect signals to slots
-        self.search_button.clicked.connect(self.search)
+        # self.search_button.clicked.connect(self.search)
+        self.dept_search_textbox.textChanged.connect(self.search)
+        self.num_search_textbox.textChanged.connect(self.search)
+        self.area_search_textbox.textChanged.connect(self.search)
+        self.title_search_textbox.textChanged.connect(self.search)
         #self.results_list.itemClicked.connect(self.handle_result_click)
 
         self.results_list.itemDoubleClicked.connect(
