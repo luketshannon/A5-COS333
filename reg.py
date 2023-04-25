@@ -203,6 +203,8 @@ class SearchApp(QtWidgets.QMainWindow):
 
     def handle_result_click(self, item):
         # Handle result click event here
+        if not item:
+            return
         result_text = item.text()
         course_num = int(result_text[:5].replace(' ', ''))
         self.popup_details(course_num)
@@ -225,6 +227,7 @@ def poll_queue_helper(queue, results_list, error_dialog_box):
         for result in cur_class:
             item = QtWidgets.QListWidgetItem(result)
             results_list.addItem(item)
+            results_list.setCurrentRow(0)
         results_list.repaint()
 
 
