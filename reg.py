@@ -193,7 +193,7 @@ class SearchApp(QtWidgets.QMainWindow):
         details = get_details(course_num)
         if not details[0]:
             #If error occurred when generating details in regserver
-            self.error_dialog_box(sys.argv[0]+ ': ' + str(details[1]))
+            self.error_dialog_box(str(details[1]))
             return
         outputter = cli_output.Output()
         details = outputter.courseid(details[1])
@@ -218,8 +218,7 @@ def poll_queue_helper(queue, results_list, error_dialog_box):
 
         results_list.clear()
         if not search_results[0]:
-            error_dialog_box(sys.argv[0]+': '
-                + str(search_results[1]))
+            error_dialog_box(str(search_results[1]))
             return # If query failed, then no results to display
         output = cli_output.Output()
         cur_class = output.to_cli(search_results[1])
