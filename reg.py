@@ -1,6 +1,8 @@
 import socket
 import pickle
 import sys
+import threading
+import queue as queuemod
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtGui import QFont
 from PyQt5.QtGui import QKeySequence
@@ -136,6 +138,15 @@ class SearchApp(QtWidgets.QMainWindow):
         self.title_search_textbox.textChanged.connect(self.search)
         #self.results_list.itemClicked.connect(self.handle_result_click)
 
+        self.queue = queuemod.Queue()
+        def poll_queue():
+            poll_queue_helper(self.queue, self.results_list, self.error_dialog_box)
+
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(poll_queue)
+        self.timer.setInterval(100) # milliseconds
+        self.timer.start()
+
         self.results_list.itemDoubleClicked.connect(
             self.handle_result_click)
         self.show()
@@ -173,23 +184,8 @@ class SearchApp(QtWidgets.QMainWindow):
         search_terms = [dept, num, area, title]
         # Perform search here and add results to results_list
 
-
-        self.results_list.clear()
-        search_results = get_search_res(search_terms)
-        if not search_results[0]:
-            self.error_dialog_box(sys.argv[0]+': '
-                + str(search_results[1]))
-            return # If query failed, then no results to display
-        output = cli_output.Output()
-        cur_class = output.to_cli(search_results[1])
-
-        for result in cur_class:
-
-            #my_button = QtWidgets.QPushButton(result)
-
-            # Result will be a list of form [num, , , title]
-            item = QtWidgets.QListWidgetItem(result)
-            self.results_list.addItem(item)
+        thread = GuiThread(search_terms, self.queue)
+        thread.start()
 
 
     def popup_details(self, course_num):
@@ -211,6 +207,37 @@ class SearchApp(QtWidgets.QMainWindow):
         course_num = int(result_text[:5].replace(' ', ''))
         self.popup_details(course_num)
 
+def poll_queue_helper(queue, results_list, error_dialog_box):
+    while True:
+        try:
+            search_results = queue.get(block=False)
+        except queuemod.Empty:
+            break
+
+        results_list.clear()
+        if not search_results[0]:
+            error_dialog_box(sys.argv[0]+': '
+                + str(search_results[1]))
+            return # If query failed, then no results to display
+        output = cli_output.Output()
+        cur_class = output.to_cli(search_results[1])
+
+        for result in cur_class:
+            item = QtWidgets.QListWidgetItem(result)
+            results_list.addItem(item)
+        results_list.repaint()
+
+
+class GuiThread(threading.Thread):
+
+    def __init__(self, search_terms, queue):
+        threading.Thread.__init__(self)
+        self.search_terms = search_terms
+        self.queue = queue
+
+    def run(self):
+        results = get_search_res(self.search_terms)
+        self.queue.put(results)
 
 def main():
     user_input = cli_input.Input()
