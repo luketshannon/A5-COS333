@@ -28,6 +28,8 @@ def get_courses(args):
 # Returns course details that match coursenum in the following form:
 #(0, err_message) or (1, courses)
 def get_dets(args):
+    print(args)
+    print(sys.argv[0] + ': No class with classid ' + str(args) + ' exists')
     # use regdetials.py
     d_b = reg_db.Database()
     response = d_b.query_classid(args)
@@ -38,9 +40,9 @@ def get_dets(args):
         return (0, 'A server error occurred. '
         + 'Please contact the system administrator.')
     if len(response[1][0]) == 0:
-        err = sys.argv[0] + ': classid does not exist'
+        err = sys.argv[0] + ': no class with classid ' + str(args) + ' exists'
         print(err, file=sys.stderr) #test this****
-        return (0, 'classid does not exist')
+        return (0, str(err))
     return (1, response[1])
 
 
