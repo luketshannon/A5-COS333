@@ -5,6 +5,11 @@ Luke Shannon and Sarah Bock
 # Luke contribution
 
 # Sarah contribution
+For this assignment, I worked on debugging. We had several errors in our code
+from assignment 2, so I worked on fixing all of those errors for this assignment.
+This included layout, error handling from the database, and bugs that caused our
+program to crash. I also worked on checking the performance of the code to make
+sure it matched the behavior of the reference file.
 
 # Help from people
 
