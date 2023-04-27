@@ -104,12 +104,6 @@ class SearchApp(QtWidgets.QMainWindow):
         layout.addWidget(self.area_search_textbox, 2, 1)
         layout.addWidget(title_search_label, 3, 0)
         layout.addWidget(self.title_search_textbox, 3, 1)
-
-
-
-        # layout.addWidget(self.search_button, 0, 2, 4, 1)
-
-
         layout2 = QtWidgets.QGridLayout()
         layout2.addWidget(self.results_list)
 
@@ -140,7 +134,8 @@ class SearchApp(QtWidgets.QMainWindow):
 
         self.queue = queuemod.Queue()
         def poll_queue():
-            poll_queue_helper(self.queue, self.results_list, self.error_dialog_box)
+            poll_queue_helper(self.queue,
+                    self.results_list, self.error_dialog_box)
 
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(poll_queue)
