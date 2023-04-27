@@ -27,7 +27,8 @@ class Input:
         self.parser.add_argument('port', metavar='port', type = int,
         help='the port at which the server is listening')
 
-        self.parser.add_argument('delay', metavar='delay', type = int, help="delay of the server in seconds")
+        self.parser.add_argument('delay', metavar='delay',
+            type = int, help="delay of the server in seconds")
 
         self.parsed_args = self.parser.parse_args(args)
         return self.parsed_args

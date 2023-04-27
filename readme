@@ -3,13 +3,20 @@ lshannon_sb35
 Luke Shannon and Sarah Bock
 
 # Luke contribution
+This assignment I added delay to our arguments and program. I then threaded our server 
+program, which involved adapting previous code and creating a new class to handle 
+server requests. Once that was working I updated the code to create a new request every
+time the text in the search box changes, so that we could remove the submit button.
+Then I threaded the client program so that the gui would not freeze while the client
+waited to receive back data from the server.
 
 # Sarah contribution
 For this assignment, I worked on debugging. We had several errors in our code
 from assignment 2, so I worked on fixing all of those errors for this assignment.
 This included layout, error handling from the database, and bugs that caused our
 program to crash. I also worked on checking the performance of the code to make
-sure it matched the behavior of the reference file.
+sure it matched the behavior of the reference file. I also worked on cleaning up the code
+with pylint and testing it on armlab.
 
 # Help from people
 

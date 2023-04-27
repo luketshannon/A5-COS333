@@ -38,7 +38,8 @@ def get_dets(args):
         return (0, 'A server error occurred. '
         + 'Please contact the system administrator.')
     if len(response[1][0]) == 0:
-        err = sys.argv[0] + ': no class with classid ' + str(args) + ' exists'
+        err = sys.argv[0] + ': no class with classid '
+        err += str(args) + ' exists'
         print(err, file=sys.stderr) #test this****
         return (0, str(err))
     return (1, response[1])
@@ -101,7 +102,7 @@ def main():
                 # Create a new thread to handle the connection
                 thread = ServerThread(user_input.delay, conn)
                 thread.start()
-               
+
     except Exception as ex:
         print(ex, file=sys.stderr)
         sys.exit(1)
